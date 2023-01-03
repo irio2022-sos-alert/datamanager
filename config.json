@@ -1,0 +1,11 @@
+[
+    {
+        "name": "google",
+        "url": "google.com",
+        "frequency": 1,
+        "alerting_window": 1,
+        "allowed_resp_time": 1,
+        "phone_number": "123456789",
+        "email": "google@gmail.com"
+    }
+]
