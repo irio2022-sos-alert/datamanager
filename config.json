@@ -1,6 +1,5 @@
 [
     {
-        "name": "google",
         "url": "google.com",
         "frequency": 1,
         "alerting_window": 1,

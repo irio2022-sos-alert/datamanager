@@ -20,23 +20,12 @@ class DataManagerStub(object):
                 request_serializer=datamanager__pb2.ServiceConfig.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
-        self.GetService = channel.unary_unary(
-                '/DataManager/GetService',
-                request_serializer=datamanager__pb2.GetServiceRequest.SerializeToString,
-                response_deserializer=datamanager__pb2.ServiceConfig.FromString,
-                )
 
 
 class DataManagerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def ChangeConfig(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetService(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -49,11 +38,6 @@ def add_DataManagerServicer_to_server(servicer, server):
                     servicer.ChangeConfig,
                     request_deserializer=datamanager__pb2.ServiceConfig.FromString,
                     response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            ),
-            'GetService': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetService,
-                    request_deserializer=datamanager__pb2.GetServiceRequest.FromString,
-                    response_serializer=datamanager__pb2.ServiceConfig.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -79,22 +63,5 @@ class DataManager(object):
         return grpc.experimental.unary_unary(request, target, '/DataManager/ChangeConfig',
             datamanager__pb2.ServiceConfig.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def GetService(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DataManager/GetService',
-            datamanager__pb2.GetServiceRequest.SerializeToString,
-            datamanager__pb2.ServiceConfig.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

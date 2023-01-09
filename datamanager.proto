@@ -3,8 +3,6 @@ import "google/protobuf/empty.proto";
 
 service DataManager {
     rpc ChangeConfig (ServiceConfig) returns (google.protobuf.Empty) {}
-
-    rpc GetService (GetServiceRequest) returns (ServiceConfig) {}
 }
 
 // The request message containing the user's name.
@@ -18,6 +16,3 @@ message ServiceConfig {
     string email = 7;
 }
 
-message GetServiceRequest {
-    string name = 1;
-}

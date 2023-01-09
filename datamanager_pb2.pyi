@@ -5,12 +5,6 @@ from typing import ClassVar as _ClassVar, Optional as _Optional
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
-class GetServiceRequest(_message.Message):
-    __slots__ = ["name"]
-    NAME_FIELD_NUMBER: _ClassVar[int]
-    name: str
-    def __init__(self, name: _Optional[str] = ...) -> None: ...
-
 class ServiceConfig(_message.Message):
     __slots__ = ["alerting_window", "allowed_resp_time", "email", "frequency", "name", "phone_number", "url"]
     ALERTING_WINDOW_FIELD_NUMBER: _ClassVar[int]
