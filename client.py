@@ -12,6 +12,6 @@ cfg = {
 
 client = datamanager_client.ExampleDataManagerClient()
 
-client.get_service('google')
+# client.get_service('google')
 client.change_config(cfg)
-client.get_service('google')
+# client.get_service('google')

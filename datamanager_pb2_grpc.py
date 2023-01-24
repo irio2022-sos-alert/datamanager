@@ -3,7 +3,6 @@
 import grpc
 
 import datamanager_pb2 as datamanager__pb2
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class DataManagerStub(object):
@@ -18,7 +17,7 @@ class DataManagerStub(object):
         self.ChangeConfig = channel.unary_unary(
                 '/DataManager/ChangeConfig',
                 request_serializer=datamanager__pb2.ServiceConfig.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                response_deserializer=datamanager__pb2.ResponseMsg.FromString,
                 )
 
 
@@ -37,7 +36,7 @@ def add_DataManagerServicer_to_server(servicer, server):
             'ChangeConfig': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeConfig,
                     request_deserializer=datamanager__pb2.ServiceConfig.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    response_serializer=datamanager__pb2.ResponseMsg.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -62,6 +61,6 @@ class DataManager(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/DataManager/ChangeConfig',
             datamanager__pb2.ServiceConfig.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            datamanager__pb2.ResponseMsg.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

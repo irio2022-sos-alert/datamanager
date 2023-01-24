@@ -2,27 +2,14 @@ import grpc
 import datamanager_pb2
 import datamanager_pb2_grpc
 
-
-SERVER_ADDRESS = 'localhost'
-PORT = 50051
+SERVER_ADDRESS = 'datamanager-oj2qxg6juq-ew.a.run.app'
+PORT = 443
 
 class ExampleDataManagerClient(object):
     def __init__(self):
-        self.channel = grpc.insecure_channel(f'{SERVER_ADDRESS}:{PORT}')
+        self.channel = grpc.secure_channel(SERVER_ADDRESS, grpc.ssl_channel_credentials())
+        # self.channel = grpc.insecure_channel(f'{SERVER_ADDRESS}')
         self.stub = datamanager_pb2_grpc.DataManagerStub(self.channel)
-    
-    def get_service(self, name):
-        request = datamanager_pb2.GetServiceRequest(
-            name=name
-        )
-
-        try:
-            response = self.stub.GetService(request)
-            print('Service fetched.')
-            print(response)
-        except grpc.RpcError as err:
-            print(err.details())
-            print('{}, {}'.format(err.code().name, err.code().value))
 
     def change_config(self, cfg):
         request = datamanager_pb2.ServiceConfig(
