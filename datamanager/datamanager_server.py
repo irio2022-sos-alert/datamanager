@@ -1,5 +1,6 @@
 import logging
 from concurrent import futures
+import asyncio
 
 import grpc
 import datamanager_pb2
@@ -57,4 +58,4 @@ async def main():
     await serve(port)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
