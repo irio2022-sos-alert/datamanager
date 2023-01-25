@@ -26,7 +26,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         return datamanager_pb2.ResponseMsg(result="okay")
 
-def serve() -> None:
+async def serve() -> None:
     create_topic()
     bind_address = f"[::]:{_PORT}"
     server = grpc.server(futures.ThreadPoolExecutor())
@@ -37,9 +37,9 @@ def serve() -> None:
     server.add_insecure_port(bind_address)
     server.start()
     logging.info("Listening on %s.", bind_address)
-    server.wait_for_termination()
+    await server.wait_for_termination()
 
-def create_topic() -> None:
+async def create_topic() -> None:
     """Create a new Pub/Sub topic."""
     # [START pubsub_quickstart_create_topic]
     # [START pubsub_create_topic]
