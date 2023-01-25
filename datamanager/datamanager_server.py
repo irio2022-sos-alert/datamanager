@@ -20,13 +20,32 @@ publisher = pubsub_v1.PublisherClient()
 # ExampleServiceServicer is the server-side artifact.
 class DataManager(datamanager_pb2_grpc.DataManagerServicer): 
 
-    def __init__(self, config) -> None:
-        self.config = config
+    def __init__(self) -> None:
+        self.config = parse_config()
+        self.topic = create_topic()
     
     def ChangeConfig(self, 
                     request: datamanager_pb2.ServiceConfig, 
                     context: grpc.ServicerContext):
-        
+
+        service = {
+            "name": request.name,
+            "url": request.url,
+            "frequency": request.frequency,
+            "alerting_window": request.alerting_window,
+            "allowed_resp_time": request.allowed_resp_time,
+            "phone_number": request.phone_number,
+            "email": request.email
+        }
+
+        event = Event()
+        thread = Thread(target=run_in_cycle, args=(request.name, request.frequency, event))
+        self.config[request.name] = {
+            "config": service,
+            "thread_executing": thread,
+            "event": event
+        }
+        thread.start()
 
         return datamanager_pb2.ResponseMsg(result="okay")
 
@@ -40,12 +59,10 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         return datamanager_pb2.ResponseMsg(result="stopped")
 
 def serve(port) -> None:
-    # create_topic()
-    config = parse_config()
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
-        DataManager(config), server
+        DataManager(), server
     )
 
     server.add_insecure_port(bind_address)
@@ -62,9 +79,12 @@ def create_topic() -> None:
     topic_id = "datamanager-dataretriever-communication"
 
     topic_path = publisher.topic_path(project_id, topic_id)
-    topic = publisher.create_topic(request={"name": topic_path})
 
-    print(f"Created topic: {topic.name}")
+    if publisher.get_topic(request={"name": topic_path}).name == None:
+        topic = publisher.create_topic(request={"name": topic_path})
+        print(f"Created topic: {topic.name}")
+    else:
+        print(f"Topic already exists")
     # [END pubsub_quickstart_create_topic]
     # [END pubsub_create_topic]
 
