@@ -44,8 +44,8 @@ def create_topic() -> None:
     # [START pubsub_quickstart_create_topic]
     # [START pubsub_create_topic]
 
-    project_id = os.environ["PROJECT_ID"]
-    topic_id = os.environ["TOPIC_ID"]
+    project_id = "turing-terminus-374215"
+    topic_id = "datamanager-dataretriever-communication"
 
     topic_path = publisher.topic_path(project_id, topic_id)
     topic = publisher.create_topic(request={"name": topic_path})
