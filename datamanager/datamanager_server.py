@@ -5,11 +5,9 @@ import grpc
 import datamanager_pb2
 import datamanager_pb2_grpc
 
-from google.protobuf import empty_pb2
 from google.cloud import pubsub_v1
 
 import os
-import json
 
 config = {}
 publisher = pubsub_v1.PublisherClient()
@@ -52,7 +50,11 @@ async def create_topic() -> None:
     # [END pubsub_quickstart_create_topic]
     # [END pubsub_create_topic]
 
-if __name__ == "__main__":
+
+async def main():
     port = os.environ.get("PORT", "50051")
     logging.basicConfig(level=logging.INFO)
-    serve(port)
+    await serve(port)
+
+if __name__ == "__main__":
+    main()
