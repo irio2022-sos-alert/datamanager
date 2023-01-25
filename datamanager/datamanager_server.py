@@ -8,6 +8,10 @@ import datamanager_pb2_grpc
 
 from google.cloud import pubsub_v1
 
+from threading import Thread, Event
+import json
+import time
+
 import os
 
 config = {}
@@ -20,8 +24,18 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
     def ChangeConfig(self, 
                     request: datamanager_pb2.ServiceConfig, 
                     context: grpc.ServicerContext):
+        
 
         return datamanager_pb2.ResponseMsg(result="okay")
+
+    def StopService(self, 
+                    request: datamanager_pb2.ServiceName, 
+                    context: grpc.ServicerContext):
+        
+        key = request["name"]
+        config[key]["event"].set()
+
+        return datamanager_pb2.ResponseMsg(result="stopped")
 
 async def serve(port) -> None:
     await create_topic()
@@ -51,6 +65,33 @@ async def create_topic() -> None:
     # [END pubsub_quickstart_create_topic]
     # [END pubsub_create_topic]
 
+def run_in_cycle(name, interval, event):
+    logging.info("HELLO FROM %s", name)
+    # perform task in iterations
+    while True:
+        time.sleep(interval)
+        print(name)
+        if event.is_set():
+            break
+
+def parse_config() -> dict:
+    dic = {}
+    data = ""
+    with open("config.json") as config_file:
+        data = json.load(config_file)
+
+
+    for service in data:
+        event = Event()
+        thread = Thread(target=run_in_cycle, args=(service["name"], service["frequency"], event))
+        dic[service["name"]] = {
+            "config": service,
+            "thread_executing": thread,
+            "event": event
+        }
+        thread.start()
+
+    return dic
 
 async def main():
     port = os.environ.get("PORT", "50051")
@@ -58,4 +99,5 @@ async def main():
     await serve(port)
 
 if __name__ == "__main__":
+    config = parse_config()
     asyncio.run(main())

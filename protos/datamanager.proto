@@ -2,6 +2,7 @@ syntax = "proto3";
 
 service DataManager {
     rpc ChangeConfig (ServiceConfig) returns (ResponseMsg);
+    rpc StopService (ServiceName) returns (ResponseMsg);
 };
 
 // The request message containing the user's name.
@@ -18,3 +19,7 @@ message ServiceConfig {
 message ResponseMsg {
     string result = 1;
 };
+
+message ServiceName {
+    string name = 1;
+}
