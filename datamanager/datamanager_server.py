@@ -37,8 +37,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         return datamanager_pb2.ResponseMsg(result="stopped")
 
-async def serve(port) -> None:
-    await create_topic()
+def serve(port) -> None:
+    create_topic()
+    config = parse_config()
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
@@ -47,8 +48,8 @@ async def serve(port) -> None:
 
     server.add_insecure_port(bind_address)
     server.start()
-    logging.info("Listening on %s.", bind_address)
-    await server.wait_for_termination()
+    logging.info("Listening on port %s.", port)
+    server.wait_for_termination()
 
 async def create_topic() -> None:
     """Create a new Pub/Sub topic."""
@@ -93,11 +94,7 @@ def parse_config() -> dict:
 
     return dic
 
-async def main():
+if __name__ == "__main__":
     port = os.environ.get("PORT", "50051")
     logging.basicConfig(level=logging.INFO)
-    await serve(port)
-
-if __name__ == "__main__":
-    config = parse_config()
-    asyncio.run(main())
+    serve(port)
