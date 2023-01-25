@@ -66,24 +66,15 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         topic_path = self.publisher.topic_path(project_id, topic_id)
 
-        maybe_topic = self.publisher.get_topic(request={"topic": topic_path})
-
-        if maybe_topic == None:
+        try:
+            maybe_topic = self.publisher.get_topic(request={"topic": topic_path})
+            print(f"Topic already exists")
+            return maybe_topic.name
+        except:
             topic = self.publisher.create_topic(request={"name": topic_path})
             print(f"Created topic: {topic.name}")
             return topic.name
-        else:
-            print(f"Topic already exists")
-            return maybe_topic.name
-        
-
-        try:
-            response = self.stub.StopService(request)
-            print('New config sent.')
-            print(response)
-        except grpc.RpcError as err:
-            print(err.details())
-            print('{}, {}'.format(err.code().name, err.code().value))
+            
         # [END pubsub_quickstart_create_topic]
         # [END pubsub_create_topic]
 
