@@ -19,9 +19,9 @@ import os
 class DataManager(datamanager_pb2_grpc.DataManagerServicer): 
 
     def __init__(self) -> None:
+        self.publisher = pubsub_v1.PublisherClient()
         self.config = parse_config()
         self.topic = self.create_topic()
-        self.publisher = pubsub_v1.PublisherClient()
     
     def ChangeConfig(self, 
                     request: datamanager_pb2.ServiceConfig, 
