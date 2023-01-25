@@ -51,7 +51,7 @@ def serve(port) -> None:
     logging.info("Listening on port %s.", port)
     server.wait_for_termination()
 
-async def create_topic() -> None:
+def create_topic() -> None:
     """Create a new Pub/Sub topic."""
     # [START pubsub_quickstart_create_topic]
     # [START pubsub_create_topic]
