@@ -32,7 +32,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     request: datamanager_pb2.ServiceName, 
                     context: grpc.ServicerContext):
         
-        key = request["name"]
+        key = request.name
         config[key]["event"].set()
 
         return datamanager_pb2.ResponseMsg(result="stopped")
