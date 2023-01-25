@@ -14,15 +14,14 @@ import time
 
 import os
 
-publisher = pubsub_v1.PublisherClient()
-
 # Inherit from example_pb2_grpc.ExampleServiceServicer
 # ExampleServiceServicer is the server-side artifact.
 class DataManager(datamanager_pb2_grpc.DataManagerServicer): 
 
     def __init__(self) -> None:
         self.config = parse_config()
-        self.topic = create_topic()
+        self.topic = self.create_topic()
+        self.publisher = pubsub_v1.PublisherClient()
     
     def ChangeConfig(self, 
                     request: datamanager_pb2.ServiceConfig, 
@@ -58,6 +57,28 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         return datamanager_pb2.ResponseMsg(result="stopped")
 
+    def create_topic(self) -> None:
+        """Create a new Pub/Sub topic."""
+        # [START pubsub_quickstart_create_topic]
+        # [START pubsub_create_topic]
+
+        request = pubsub_v1.Topic(
+            name="datamanager-dataretriever-communication",
+        )
+
+        maybe_topic = self.publisher.get_topic(request=request)
+
+        if maybe_topic == None:
+            topic = self.publisher.create_topic(request=request)
+            print(f"Created topic: {topic.name}")
+            return topic.name
+        else:
+            print(f"Topic already exists")
+            return maybe_topic.name
+        
+        # [END pubsub_quickstart_create_topic]
+        # [END pubsub_create_topic]
+
 def serve(port) -> None:
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
@@ -69,29 +90,6 @@ def serve(port) -> None:
     server.start()
     logging.info("Listening on port %s.", port)
     server.wait_for_termination()
-
-def create_topic() -> None:
-    """Create a new Pub/Sub topic."""
-    # [START pubsub_quickstart_create_topic]
-    # [START pubsub_create_topic]
-
-    project_id = "turing-terminus-374215"
-    topic_id = "datamanager-dataretriever-communication"
-
-    topic_path = publisher.topic_path(project_id, topic_id)
-    maybe_topic_name = publisher.get_topic(request={"name": topic_path}).name
-
-    if maybe_topic_name == None:
-        topic = publisher.create_topic(request={"name": topic_path})
-        print(f"Created topic: {topic.name}")
-        return topic.name
-    else:
-        print(f"Topic already exists")
-        return maybe_topic_name
-
-    
-    # [END pubsub_quickstart_create_topic]
-    # [END pubsub_create_topic]
 
 def run_in_cycle(name, interval, event):
     # perform task in iterations
