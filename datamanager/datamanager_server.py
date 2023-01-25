@@ -61,15 +61,15 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         """Create a new Pub/Sub topic."""
         # [START pubsub_quickstart_create_topic]
         # [START pubsub_create_topic]
+        project_id = "turing-terminus-374215"
+        topic_id = "datamanager-dataretriever-communication"
 
-        request = pubsub_v1.Topic(
-            name="datamanager-dataretriever-communication",
-        )
+        topic_path = self.publisher.topic_path(project_id, topic_id)
 
-        maybe_topic = self.publisher.get_topic(request=request)
+        maybe_topic = self.publisher.get_topic(request=topic_path)
 
         if maybe_topic == None:
-            topic = self.publisher.create_topic(request=request)
+            topic = self.publisher.create_topic(request=topic_path)
             print(f"Created topic: {topic.name}")
             return topic.name
         else:
