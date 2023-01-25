@@ -11,8 +11,6 @@ from google.cloud import pubsub_v1
 import os
 import json
 
-_PORT = os.environ["PORT"]
-
 config = {}
 publisher = pubsub_v1.PublisherClient()
 
@@ -26,9 +24,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         return datamanager_pb2.ResponseMsg(result="okay")
 
-async def serve() -> None:
+async def serve(port) -> None:
     create_topic()
-    bind_address = f"[::]:{_PORT}"
+    bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
         DataManager(), server
@@ -55,5 +53,6 @@ async def create_topic() -> None:
     # [END pubsub_create_topic]
 
 if __name__ == "__main__":
+    port = os.environ.get("PORT", "50051")
     logging.basicConfig(level=logging.INFO)
-    serve()
+    serve(port)
