@@ -79,12 +79,17 @@ def create_topic() -> None:
     topic_id = "datamanager-dataretriever-communication"
 
     topic_path = publisher.topic_path(project_id, topic_id)
+    maybe_topic_name = publisher.get_topic(request={"name": topic_path}).name
 
-    if publisher.get_topic(request={"name": topic_path}).name == None:
+    if maybe_topic_name == None:
         topic = publisher.create_topic(request={"name": topic_path})
         print(f"Created topic: {topic.name}")
+        return topic.name
     else:
         print(f"Topic already exists")
+        return maybe_topic_name
+
+    
     # [END pubsub_quickstart_create_topic]
     # [END pubsub_create_topic]
 
