@@ -14,12 +14,14 @@ import time
 
 import os
 
-config = {}
 publisher = pubsub_v1.PublisherClient()
 
 # Inherit from example_pb2_grpc.ExampleServiceServicer
 # ExampleServiceServicer is the server-side artifact.
 class DataManager(datamanager_pb2_grpc.DataManagerServicer): 
+
+    def __init__(self, config) -> None:
+        self.config = config
     
     def ChangeConfig(self, 
                     request: datamanager_pb2.ServiceConfig, 
@@ -33,7 +35,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     context: grpc.ServicerContext):
         
         key = request.name
-        config[key]["event"].set()
+        self.config[key]["event"].set()
 
         return datamanager_pb2.ResponseMsg(result="stopped")
 
@@ -43,7 +45,7 @@ def serve(port) -> None:
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
-        DataManager(), server
+        DataManager(config), server
     )
 
     server.add_insecure_port(bind_address)
