@@ -8,7 +8,6 @@ import datamanager_pb2_grpc
 from google.protobuf import empty_pb2
 from google.cloud import pubsub_v1
 
-from dotenv import load_dotenv
 import os
 import json
 
@@ -28,6 +27,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         return datamanager_pb2.ResponseMsg(result="okay")
 
 def serve() -> None:
+    create_topic()
     bind_address = f"[::]:{_PORT}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
@@ -55,8 +55,5 @@ def create_topic() -> None:
     # [END pubsub_create_topic]
 
 if __name__ == "__main__":
-    load_dotenv()
-    # create_topic()
-
     logging.basicConfig(level=logging.INFO)
     serve()
