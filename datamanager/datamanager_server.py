@@ -38,7 +38,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         return datamanager_pb2.ResponseMsg(result="stopped")
 
 def serve(port) -> None:
-    create_topic()
+    # create_topic()
     config = parse_config()
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
@@ -67,11 +67,10 @@ def create_topic() -> None:
     # [END pubsub_create_topic]
 
 def run_in_cycle(name, interval, event):
-    logging.info("HELLO FROM %s", name)
     # perform task in iterations
     while True:
         time.sleep(interval)
-        print(name)
+        logging.info("HELLO FROM %s", name)
         if event.is_set():
             break
 
