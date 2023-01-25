@@ -66,7 +66,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         topic_path = self.publisher.topic_path(project_id, topic_id)
 
-        maybe_topic = self.publisher.get_topic(request={"name": topic_path})
+        maybe_topic = self.publisher.get_topic(request={"topic": topic_path})
 
         if maybe_topic == None:
             topic = self.publisher.create_topic(request={"name": topic_path})
