@@ -24,7 +24,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         return datamanager_pb2.ResponseMsg(result="okay")
 
 async def serve(port) -> None:
-    create_topic()
+    await create_topic()
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
