@@ -7,4 +7,5 @@ gcloud run deploy $app_name \
 --image $image_name \
 --region europe-north1 \
 --platform managed \
---allow-unauthenticated
+--allow-unauthenticated \
+--no-cpu-throttling

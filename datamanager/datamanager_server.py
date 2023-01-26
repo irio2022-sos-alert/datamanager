@@ -27,6 +27,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     request: datamanager_pb2.ServiceConfig, 
                     context: grpc.ServicerContext):
 
+        key = request.name
+        self.config[key]["event"].set()
+
         service = {
             "name": request.name,
             "url": request.url,
@@ -74,7 +77,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             topic = self.publisher.create_topic(request={"name": topic_path})
             print(f"Created topic: {topic.name}")
             return topic.name
-            
+
         # [END pubsub_quickstart_create_topic]
         # [END pubsub_create_topic]
 
