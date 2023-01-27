@@ -90,6 +90,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 def run_in_cycle(name: str):
     while True:
         if not config[name]["enabled"]:
+            logging.info(f"session closed {name}")
             break
         publisher = pubsub_v1.PublisherClient()
         project_id = os.getenv("PROJECT_ID")
