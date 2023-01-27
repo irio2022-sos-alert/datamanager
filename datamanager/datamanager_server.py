@@ -87,7 +87,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 #                 logging.info("HELLO FROM %s", service.name)
 #                 time.sleep(service.frequency)
 
-def run_in_cycle(name):
+def run_in_cycle(name: str):
     while True:
         if not config[name]["enabled"]:
             break
@@ -131,7 +131,7 @@ def parse_config() -> None:
 
     global config
     config = {}
-    
+
     data = ""
     with open("config.json") as config_file:
         data = json.load(config_file)
