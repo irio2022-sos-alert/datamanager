@@ -148,9 +148,9 @@ def parse_config() -> None:
 
     for service in data:
         name = service["name"]
-        print(name)
-        thread = Thread(target=run_in_cycle, args=(name))
-        thread.start()
+        logging.info(name)
+        # thread = Thread(target=run_in_cycle, args=(name))
+        # thread.start()
 
 
 def serve(port) -> None:
