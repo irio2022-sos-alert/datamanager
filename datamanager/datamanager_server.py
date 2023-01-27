@@ -145,7 +145,8 @@ def parse_config() -> None:
         }
 
     for service in data:
-        thread = Thread(target=run_in_cycle, args=(service["name"]))
+        name = service["name"]
+        thread = Thread(target=run_in_cycle, args=(name))
         thread.start()
 
 
