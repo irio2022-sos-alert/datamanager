@@ -97,7 +97,7 @@ def run_in_cycle(name: str):
         topic_path = publisher.topic_path(project_id, topic_id)
 
         record = {
-            'url': config[name]["url"],
+            'domain': config[name]["url"],
         }
 
         data = json.dumps(record).encode("utf-8")
