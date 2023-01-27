@@ -36,9 +36,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         #     session.add(service)
         #     session.commit()
 
-        # if not config[request.name]["enabled"]:
-        #     thread = Thread(target=run_in_cycle, args=(request.name))
-        #     thread.start()
+        if not config[request.name]["enabled"]:
+            thread = Thread(target=run_in_cycle, args=request.name)
+            thread.start()
 
         config[request.name]["url"] = request.url
         config[request.name]["frequency"] = request.frequency
@@ -149,8 +149,8 @@ def parse_config() -> None:
     for service in data:
         name = service["name"]
         logging.info(name)
-        # thread = Thread(target=run_in_cycle, args=(name))
-        # thread.start()
+        thread = Thread(target=run_in_cycle, args=name)
+        thread.start()
 
 
 def serve(port) -> None:
