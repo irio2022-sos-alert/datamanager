@@ -17,8 +17,6 @@ import datamanager_pb2_grpc
 
 from google.cloud import pubsub_v1
 
-config = {}
-
 # Inherit from example_pb2_grpc.ExampleServiceServicer
 # ExampleServiceServicer is the server-side artifact.
 class DataManager(datamanager_pb2_grpc.DataManagerServicer): 
@@ -130,6 +128,10 @@ def run_in_cycle(name):
 
 
 def parse_config() -> None:
+
+    global config
+    config = {}
+    
     data = ""
     with open("config.json") as config_file:
         data = json.load(config_file)
@@ -151,7 +153,7 @@ def parse_config() -> None:
 
 
 def serve(port) -> None:
-    config = parse_config()
+    parse_config()
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
