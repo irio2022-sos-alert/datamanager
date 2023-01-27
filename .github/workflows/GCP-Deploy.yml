@@ -26,10 +26,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Create dataretriever pubsub topic
+        run: chmod +x scripts/create-topic-nofail.sh && ./scripts/create-topic-nofail.sh ${{ secrets.GCP_DATAMANAGER_TOPIC }}
+        shell: bash
+
+      - name: Create dataretriever pubsub subscription
+        run: chmod +x scripts/create-sub-nofail.sh && ./scripts/create-sub-nofail.sh \
+             ${{ secrets.GCP_DATARETRIEVER_SUBSCRIPTION }} ${{ secrets.GCP_DATAMANAGER_TOPIC }} ${{ secrets.GCP_DR_RECEIVER_ENDPOINT }}
+        shell: bash
+
       - name: Build datamanager docker
         run: chmod +x scripts/build-docker.sh && ./scripts/build-docker.sh ${{ secrets.GCP_DATAMANAGER_APP_NAME }} $DATAMANAGER_IMAGE_NAME
         shell: bash
 
       - name: Deploy datamanager docker
-        run: chmod +x scripts/deploy.sh && ./scripts/deploy.sh ${{ secrets.GCP_DATAMANAGER_APP_NAME }} $DATAMANAGER_IMAGE_NAME
+        run: chmod +x scripts/deploy.sh && ./scripts/deploy.sh ${{ secrets.GCP_DATAMANAGER_APP_NAME }} $DATAMANAGER_IMAGE_NAME ${{ secrets.DATAMANAGER_ENV }}
         shell: bash
