@@ -11,9 +11,9 @@ import grpc
 import datamanager_pb2
 import datamanager_pb2_grpc
 
-from db import init_connection_pool, migrate_db
-from models import Services
-from sqlmodel import Session
+# from db import init_connection_pool, migrate_db
+# from models import Services
+# from sqlmodel import Session
 
 from google.cloud import pubsub_v1
 
