@@ -26,25 +26,25 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     _context: grpc.ServicerContext):
 
         with Session(engine) as session:
-            name = request.name
-            services = session.query(Services).get(name)
+            name=request.name
+            services=session.query(Services).get(name)
 
             try:
-                service = services.one()
-                service.url = request.url
-                service.frequency = request.frequency
-                service.alerting_window = request.name,
-                service.allowed_resp_time = request.name
+                service=services.one()
+                service.domain=request.url
+                service.frequency=request.frequency
+                service.alerting_window=request.name,
+                service.allowed_resp_time=request.name
 
                 session.add(service)
                 session.commit()
             except:
                 service = Services(
                         name=request.name, 
-                        url = request.url,
-                        frequency = request.frequency,
-                        alerting_window = request.name,
-                        allowed_resp_time = request.name,
+                        domain=request.url,
+                        frequency=request.frequency,
+                        alerting_window=request.name,
+                        allowed_resp_time=request.name,
                     )
                 
                 session.add(service)
@@ -58,13 +58,13 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             session.commit()
 
             try:
-                admins = session.query(Admins).get(request.email1)
-                admin1_id = admins.one().id
+                admins=session.query(Admins).get(request.email1)
+                admin1_id=admins.one().id
 
                 ownership1 = Ownership(
-                        service_id = service_id,
-                        admin_id = admin1_id,
-                        first_contact = True
+                        service_id=service_id,
+                        admin_id=admin1_id,
+                        first_contact=True
                     )
 
                 session.add(ownership1)
@@ -79,9 +79,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 admin1_id = session.query(Admins).get(request.email1).one().id
 
                 ownership1 = Ownership(
-                        service_id = service_id,
-                        admin_id = admin1_id,
-                        first_contact = True
+                        service_id=service_id,
+                        admin_id=admin1_id,
+                        first_contact=True
                     )
 
                 session.add(ownership1)
@@ -92,9 +92,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 admin2_id = admins.one().id
 
                 ownership2 = Ownership(
-                        service_id = service_id,
-                        admin_id = admin2_id,
-                        first_contact = False
+                        service_id=service_id,
+                        admin_id=admin2_id,
+                        first_contact=False
                     )
 
                 session.add(ownership2)
@@ -109,9 +109,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 admin2_id = session.query(Admins).get(request.email2).one().id
 
                 ownership2 = Ownership(
-                        service_id = service_id,
-                        admin_id = admin2_id,
-                        first_contact = False
+                        service_id=service_id,
+                        admin_id=admin2_id,
+                        first_contact=False
                     )
 
                 session.add(ownership1)
@@ -144,7 +144,7 @@ def run_in_cycle():
                 if not (service.name in config):
                     config[service.name] = {
                         "service_id": service.id,
-                        "url": service.url, 
+                        "url": service.domain, 
                         "frequency": service.frequency,
                         "last_ping": int(round(datetime.now().timestamp()))
                     }
@@ -162,8 +162,7 @@ def run_in_cycle():
 
                 record = {
                     'service_id': config[name]["service_id"],
-                    'domain': config[name]["url"],
-                    #TODO: nie wiem czy Kamil nie chciał jeszcze jakiegoś pola
+                    'domain': config[name]["url"]
                 }
 
                 data = json.dumps(record).encode("utf-8")
