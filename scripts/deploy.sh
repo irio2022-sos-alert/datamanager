@@ -8,7 +8,7 @@ gcloud run deploy $app_name \
 --region europe-north1 \
 --platform managed \
 --allow-unauthenticated \
---update-env-vars .env.yaml \
+--env-vars-file .env.yaml \
 --no-cpu-throttling \
 --min-instances 1 \
 --max-instances 1
