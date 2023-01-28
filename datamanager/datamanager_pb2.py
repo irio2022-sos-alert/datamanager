@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x64\x61tamanager.proto\"\x96\x01\n\rServiceConfig\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x11\n\tfrequency\x18\x03 \x01(\x02\x12\x17\n\x0f\x61lerting_window\x18\x04 \x01(\x02\x12\x19\n\x11\x61llowed_resp_time\x18\x05 \x01(\x02\x12\x14\n\x0cphone_number\x18\x06 \x01(\t\x12\r\n\x05\x65mail\x18\x07 \x01(\t\"\x1d\n\x0bResponseMsg\x12\x0e\n\x06result\x18\x01 \x01(\t\"\x1b\n\x0bServiceName\x12\x0c\n\x04name\x18\x01 \x01(\t2f\n\x0b\x44\x61taManager\x12,\n\x0c\x43hangeConfig\x12\x0e.ServiceConfig\x1a\x0c.ResponseMsg\x12)\n\x0bStopService\x12\x0c.ServiceName\x1a\x0c.ResponseMsgb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x64\x61tamanager.proto\"\x80\x01\n\rServiceConfig\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x11\n\tfrequency\x18\x03 \x01(\x02\x12\x17\n\x0f\x61lerting_window\x18\x04 \x01(\x02\x12\x19\n\x11\x61llowed_resp_time\x18\x05 \x01(\x02\x12\r\n\x05\x65mail\x18\x06 \x01(\t\"\x1d\n\x0bResponseMsg\x12\x0e\n\x06result\x18\x01 \x01(\t\"\x1b\n\x0bServiceName\x12\x0c\n\x04name\x18\x01 \x01(\t2f\n\x0b\x44\x61taManager\x12,\n\x0c\x43hangeConfig\x12\x0e.ServiceConfig\x1a\x0c.ResponseMsg\x12)\n\x0bStopService\x12\x0c.ServiceName\x1a\x0c.ResponseMsgb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'datamanager_pb2', globals())
@@ -21,11 +21,11 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _SERVICECONFIG._serialized_start=22
-  _SERVICECONFIG._serialized_end=172
-  _RESPONSEMSG._serialized_start=174
-  _RESPONSEMSG._serialized_end=203
-  _SERVICENAME._serialized_start=205
-  _SERVICENAME._serialized_end=232
-  _DATAMANAGER._serialized_start=234
-  _DATAMANAGER._serialized_end=336
+  _SERVICECONFIG._serialized_end=150
+  _RESPONSEMSG._serialized_start=152
+  _RESPONSEMSG._serialized_end=181
+  _SERVICENAME._serialized_start=183
+  _SERVICENAME._serialized_end=210
+  _DATAMANAGER._serialized_start=212
+  _DATAMANAGER._serialized_end=314
 # @@protoc_insertion_point(module_scope)

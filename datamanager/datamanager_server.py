@@ -3,6 +3,7 @@ from concurrent import futures
 
 from threading import Thread, Event
 import time
+from datetime import datetime
 
 import os
 import json
@@ -11,9 +12,9 @@ import grpc
 import datamanager_pb2
 import datamanager_pb2_grpc
 
-# from db import init_connection_pool, migrate_db
-# from models import Services
-# from sqlmodel import Session
+from db import init_connection_pool, migrate_db
+from models import Services
+from sqlmodel import Session, select
 
 from google.cloud import pubsub_v1
 
@@ -24,25 +25,31 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     request: datamanager_pb2.ServiceConfig, 
                     _context: grpc.ServicerContext):
 
-        # with Session(engine) as session:
-        #     name = request.name
-        #     service = session.query(Services).get(name)
+        with Session(engine) as session:
+            name = request.name
+            services = session.query(Services).get(name)
 
-        #     service.url = request.url
-        #     service.frequency = request.frequency
-        #     service.alerting_window = request.name,
-        #     service.allowed_resp_time = request.name
+            try:
+                service = services.one()
+                service.url = request.url
+                service.frequency = request.frequency
+                service.alerting_window = request.name,
+                service.allowed_resp_time = request.name
 
-        #     session.add(service)
-        #     session.commit()
-
-        if not config[request.name]["enabled"]:
-            thread = Thread(target=run_in_cycle, args=(request.name, ))
-            thread.start()
-
-        config[request.name]["url"] = request.url
-        config[request.name]["frequency"] = request.frequency
-        config[request.name]["enabled"] = True
+                session.add(service)
+                session.commit()
+            except:
+                service = Services(
+                        name=request.name, 
+                        url = request.url,
+                        frequency = request.frequency,
+                        alerting_window = request.name,
+                        allowed_resp_time = request.name,
+                        email = request.email
+                    )
+                
+                session.add(service)
+                session.commit()
 
         return datamanager_pb2.ResponseMsg(result="okay")
 
@@ -57,105 +64,61 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         #     session.delete(service)
         #     session.commit()
 
-        config[request.name]["enabled"] = False
+        # config[request.name]["enabled"] = False
 
-        return datamanager_pb2.ResponseMsg(result="stopped")
+        return datamanager_pb2.ResponseMsg(result="not supported for now")
 
-# def run_in_cycle(name):
-#     while True:
-#         with Session(engine) as session:
-#             service = session.query(Services).get(name)
-#             if service is None:
-#                 logging.info(
-#                     f"Invalid confirmation request for {name}, no such service name"
-#                 )
-#                 break
-#             else:
-#                 publisher = pubsub_v1.PublisherClient()
-#                 project_id = os.getenv("PROJECT_ID")
-#                 topic_id = os.getenv("TOPIC_ID")
-#                 topic_path = publisher.topic_path(project_id, topic_id)
-
-#                 record = {
-#                     'url': service.url,
-#                 }
-
-#                 data = json.dumps(record).encode("utf-8")
-#                 future = publisher.publish(topic_path, data)
-#                 logging.info(f'published message id {future.result()}')
-
-#                 logging.info("HELLO FROM %s", service.name)
-#                 time.sleep(service.frequency)
-
-def run_in_cycle(name: str):
+def run_in_cycle():
     while True:
-        if not config[name]["enabled"]:
-            logging.info(f"Session closed {name}")
-            break
+        with Session(engine) as session:
+            stmt = select(Services)
+            services = session.exec(stmt)
+
+            for service in services:
+                if not (service.name in config):
+                    config[service.name] = {
+                        "service_id": service.id,
+                        "url": service.url, 
+                        "frequency": service.frequency,
+                        "last_ping": int(round(datetime.now().timestamp()))
+                    }
+
+        cycle_ts = int(round(datetime.now().timestamp()))
         publisher = pubsub_v1.PublisherClient()
         project_id = os.getenv("PROJECT_ID")
         topic_id = os.getenv("TOPIC_ID")
         topic_path = publisher.topic_path(project_id, topic_id)
 
-        record = {
-            'domain': config[name]["url"],
-        }
+        for name in config:
+            if cycle_ts >= config[name]["last_ping"]:
 
-        data = json.dumps(record).encode("utf-8")
-        future = publisher.publish(topic_path, data)
-        logging.info(f'published message id {future.result()}')
+                config[name]["last_ping"] += config[name]["frequency"]
 
-        logging.info(f"HELLO FROM {name}, number of registered services: {len(config)}")
-        time.sleep(config[name]["frequency"])
+                record = {
+                    'service_id': config[name]["service_id"],
+                    'domain': config[name]["url"],
+                    #TODO: nie wiem czy Kamil nie chciał jeszcze jakiegoś pola
+                }
 
-# def init_db():
-#     global engine
-#     engine = init_connection_pool()
-#     migrate_db(engine)
+                data = json.dumps(record).encode("utf-8")
+                _future = publisher.publish(topic_path, data)
+                # logging.info(f'published message id {future.result()}')
 
-
-# def register_service(config):
-#     with Session(engine) as session:
-#         session.add(
-#             Services(
-#                 name = config["name"],
-#                 url = config["url"],
-#                 frequency = config["frequency"],
-#                 alerting_window = config["alerting_window"],
-#                 allowed_resp_time = config["allowed_resp_time"]
-#             )
-#         )
-#         session.commit()
+                logging.info("HELLO FROM %s", name)
 
 
-def parse_config() -> None:
+        time.sleep(service.frequency)
+
+def init_db():
+    global engine
+    engine = init_connection_pool()
+    migrate_db(engine)
+
+def serve(port) -> None:
 
     global config
     config = {}
 
-    data = ""
-    with open("config.json") as config_file:
-        data = json.load(config_file)
-
-    # for service in data:
-    #     register_service(service)
-
-    for service in data:
-        config[service["name"]] = {
-            "url": service["url"], 
-            "frequency": service["frequency"],
-            "enabled": True
-        }
-
-    for service in data:
-        name = service["name"]
-        logging.info(name)
-        thread = Thread(target=run_in_cycle, args=(name, ))
-        thread.start()
-
-
-def serve(port) -> None:
-    parse_config()
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
@@ -164,6 +127,10 @@ def serve(port) -> None:
 
     server.add_insecure_port(bind_address)
     server.start()
+
+    thread = Thread(target=run_in_cycle)
+    thread.start()
+
     logging.info("Listening on port %s.", port)
     server.wait_for_termination()
 
