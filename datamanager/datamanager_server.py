@@ -27,7 +27,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         with Session(engine) as session:
             name=request.name
-            services=session.query(Services).get(name)
+            services=session.query(Services).where(Services.name == name)
 
             try:
                 service=services.one()
@@ -50,7 +50,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(service)
                 session.commit()
 
-            services = session.query(Services).get(name)
+            services=session.query(Services).where(Services.name == name)
             service_id = services.one().id
 
             ownerships = session.query(Ownership).get(service_id)
