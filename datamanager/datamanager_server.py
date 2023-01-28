@@ -105,7 +105,7 @@ def run_in_cycle(name: str):
         future = publisher.publish(topic_path, data)
         logging.info(f'published message id {future.result()}')
 
-        logging.info(f"HELLO FROM {name}, number registered services {len(config)}")
+        logging.info(f"HELLO FROM {name}, number of registered services: {len(config)}")
         time.sleep(config[name]["frequency"])
 
 # def init_db():
