@@ -4,7 +4,7 @@ from sqlmodel import Field, SQLModel
 class Services(SQLModel, table=True):
     __tablename__ = "services"
     id: int = Field(primary_key=True)
-    name: str = Field(primary_key=True)
+    name: str = Field(unique=True)
     domain: str 
     frequency: int
     alerting_window: int

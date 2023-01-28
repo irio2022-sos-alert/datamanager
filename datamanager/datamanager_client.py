@@ -2,7 +2,7 @@ import grpc
 import datamanager_pb2
 import datamanager_pb2_grpc
 
-SERVER_ADDRESS = 'datamanager-oj2qxg6juq-lz.a.run.app'
+SERVER_ADDRESS = 'datamanager-2xieibhnsq-lz.a.run.app'
 PORT = 443
 
 class ExampleDataManagerClient(object):
