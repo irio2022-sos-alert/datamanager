@@ -116,6 +116,8 @@ def init_db():
 
 def serve(port) -> None:
 
+    init_db()
+
     global config
     config = {}
 
