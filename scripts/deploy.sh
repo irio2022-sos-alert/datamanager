@@ -10,4 +10,6 @@ gcloud run deploy $app_name \
 --platform managed \
 --allow-unauthenticated \
 --update-env-vars $env \
---no-cpu-throttling
+--no-cpu-throttling \
+--min-instances 1 \
+--max-instances 1
