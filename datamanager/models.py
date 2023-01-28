@@ -9,14 +9,12 @@ class Services(SQLModel, table=True):
     frequency: int
     alerting_window: int
     allowed_response_time: int
-    email: str
 
 
 class Responses(SQLModel, table=True):
     __tablename__ = "responses"
     service_id: int = Field(foreign_key="services.id", primary_key=True)
     timestamp: float
-    positive: bool
 
 
 class Admins(SQLModel, table=True):

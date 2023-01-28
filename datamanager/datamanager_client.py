@@ -18,8 +18,8 @@ class ExampleDataManagerClient(object):
             frequency=cfg["frequency"],
             alerting_window=cfg["alerting_window"],
             allowed_resp_time=cfg["allowed_resp_time"],
-            phone_number=cfg["phone_number"],
-            email=cfg["email"]
+            email1=cfg["email1"],
+            email2=cfg["email2"]
         )
 
         try:

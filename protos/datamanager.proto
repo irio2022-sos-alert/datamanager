@@ -12,7 +12,8 @@ message ServiceConfig {
     float frequency = 3;
     float alerting_window = 4;
     float allowed_resp_time = 5;
-    string email = 6;
+    string email1 = 6;
+    string email2 = 7;
 };
 
 message ResponseMsg {

@@ -19,7 +19,8 @@ def read_item(
         frequency: int,
         alerting_window: int,
         allowed_resp_time: int,
-        email: str 
+        email1: str,
+        email2: str  
         ):
     cfg =  {
         "name": name,
@@ -27,7 +28,8 @@ def read_item(
         "frequency": frequency,
         "alerting_window": alerting_window,
         "allowed_resp_time": allowed_resp_time,
-        "email": email
+        "email1": email1,
+        "email2": email2
     }
 
     client.change_config(cfg)

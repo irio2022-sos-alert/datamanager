@@ -13,7 +13,7 @@ import datamanager_pb2
 import datamanager_pb2_grpc
 
 from db import init_connection_pool, migrate_db
-from models import Services
+from models import Services, Admins, Ownership
 from sqlmodel import Session, select
 
 from google.cloud import pubsub_v1
@@ -45,10 +45,76 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                         frequency = request.frequency,
                         alerting_window = request.name,
                         allowed_resp_time = request.name,
-                        email = request.email
                     )
                 
                 session.add(service)
+                session.commit()
+
+            services = session.query(Services).get(name)
+            service_id = services.one().id
+
+            ownerships = session.query(Ownership).get(service_id)
+            session.delete(ownerships)
+            session.commit()
+
+            try:
+                admins = session.query(Admins).get(request.email1)
+                admin1_id = admins.one().id
+
+                ownership1 = Ownership(
+                        service_id = service_id,
+                        admin_id = admin1_id,
+                        first_contact = True
+                    )
+
+                session.add(ownership1)
+                session.commit()
+
+            except:
+                admin1 = Admins(
+                        email=request.email1
+                    )
+                session.add(admin1)
+                session.commit()
+                admin1_id = session.query(Admins).get(request.email1).one().id
+
+                ownership1 = Ownership(
+                        service_id = service_id,
+                        admin_id = admin1_id,
+                        first_contact = True
+                    )
+
+                session.add(ownership1)
+                session.commit()
+        
+            try:
+                admins = session.query(Admins).get(request.email2)
+                admin2_id = admins.one().id
+
+                ownership2 = Ownership(
+                        service_id = service_id,
+                        admin_id = admin2_id,
+                        first_contact = False
+                    )
+
+                session.add(ownership2)
+                session.commit()
+
+            except:
+                admin2 = Admins(
+                        email=request.email2
+                    )
+                session.add(admin2)
+                session.commit()
+                admin2_id = session.query(Admins).get(request.email2).one().id
+
+                ownership2 = Ownership(
+                        service_id = service_id,
+                        admin_id = admin2_id,
+                        first_contact = False
+                    )
+
+                session.add(ownership1)
                 session.commit()
 
         return datamanager_pb2.ResponseMsg(result="okay")
