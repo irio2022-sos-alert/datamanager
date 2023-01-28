@@ -1,17 +1,33 @@
-import datamanager_client
+from fastapi import FastAPI
 
-cfg = {
-    "name": "google",
-    "url": "google.pl",
-    "frequency": 420,
-    "alerting_window": 420,
-    "allowed_resp_time": 420,
-    "phone_number": "987654321",
-    "email": "google@gmail.pl"
-}
+import datamanager_client
 
 client = datamanager_client.ExampleDataManagerClient()
 
-# client.get_service('google')
-client.change_config(cfg)
-# client.get_service('google')
+app = FastAPI()
+
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+
+@app.post("/change_service/{name}")
+def read_item(
+        name: str, 
+        url: str,
+        frequency: int,
+        alerting_window: int,
+        allowed_resp_time: int,
+        email: str 
+        ):
+    cfg =  {
+        "name": name,
+        "url": url,
+        "frequency": frequency,
+        "alerting_window": alerting_window,
+        "allowed_resp_time": allowed_resp_time,
+        "email": email
+    }
+
+    client.change_config(cfg)
