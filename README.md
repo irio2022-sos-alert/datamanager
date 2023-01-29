@@ -38,6 +38,7 @@ docker build datamanager-api -t datamanager-api:latest
 
 ```
 docker run -d -p 50054:50054  --env-file .env datamanager:latest
+docker run -d  --env-file .env datamanager-api:latest
 ```
 
 ---
