@@ -4,6 +4,8 @@ In this repo we extracted the part of the system that is responsible for handlin
 
 - ### Datamanager
 
+It has to have only one instance (min and max), because it is responsible for genereating tasks and initiation task generator, so it has to be stateless to handle timestamps to know if next task has to be sent to queue.
+
 - ### Datamanager-API
 
 
