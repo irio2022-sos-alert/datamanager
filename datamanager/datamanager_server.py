@@ -54,7 +54,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             service_id = services.one().id
 
             ownerships = session.query(Ownership).where(Ownership.service_id == service_id)
-            session.delete(ownerships)
+            for ownership in ownerships:
+                session.delete(ownership)
+            # session.query(Ownership).where(Ownership.service_id == service_id)
             session.commit()
 
             try:
