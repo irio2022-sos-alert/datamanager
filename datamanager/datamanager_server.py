@@ -63,7 +63,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             
             admins=session.query(Admins).where(Admins.email == request.email1).all()
             if len(admins) == 1:
-                admin1_id=admins[0]
+                admin1_id=admins[0].id
 
                 ownership1 = Ownership(
                         service_id=service_id,
@@ -93,7 +93,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         
             admins = session.query(Admins).where(Admins.email == request.email2).all()
             if len(admins) == 1:
-                admin2_id = admins[0]
+                admin2_id = admins[0].id
 
                 ownership2 = Ownership(
                         service_id=service_id,
