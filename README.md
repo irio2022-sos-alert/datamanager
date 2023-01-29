@@ -8,6 +8,7 @@ It has to have only one instance (min and max), because it is responsible for ge
 
 - ### Datamanager-API
 
+To use API go to endpoint "/docs".
 
 ---
 
