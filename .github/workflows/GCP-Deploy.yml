@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATAMANAGER_IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_DATAMANAGER_APP_NAME }}:latest
+      DATAMANAGER_API_IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_DATAMANAGER_API_NAME }}:latest
     steps:
       - name: Login
         uses: google-github-actions/setup-gcloud@v0
@@ -39,6 +40,14 @@ jobs:
         run: chmod +x scripts/build-docker.sh && ./scripts/build-docker.sh ${{ secrets.GCP_DATAMANAGER_APP_NAME }} $DATAMANAGER_IMAGE_NAME
         shell: bash
 
+      - name: Build datamanager-api docker
+        run: chmod +x scripts/build-docker.sh && ./scripts/build-docker.sh ${{ secrets.GCP_DATAMANAGER_API_NAME }} $DATAMANAGER_API_IMAGE_NAME
+        shell: bash
+
       - name: Deploy datamanager docker
         run: chmod +x scripts/deploy.sh && ./scripts/deploy.sh ${{ secrets.GCP_DATAMANAGER_APP_NAME }} $DATAMANAGER_IMAGE_NAME ${{ secrets.CLOUDSQL_INSTANCE }}
+        shell: bash
+
+      - name: Deploy datamanager-api docker
+        run: chmod +x scripts/deploy-api.sh && ./scripts/deploy-api.sh ${{ secrets.GCP_DATAMANAGER_API_NAME }} $DATAMANAGER_API_IMAGE_NAME
         shell: bash
