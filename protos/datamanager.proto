@@ -9,9 +9,9 @@ service DataManager {
 message ServiceConfig {
     string name = 1;
     string url = 2;
-    float frequency = 3;
-    float alerting_window = 4;
-    float allowed_resp_time = 5;
+    int32 frequency = 3;
+    int32 alerting_window = 4;
+    int32 allowed_resp_time = 5;
     string email1 = 6;
     string email2 = 7;
 };

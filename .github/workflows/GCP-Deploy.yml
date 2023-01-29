@@ -40,5 +40,5 @@ jobs:
         shell: bash
 
       - name: Deploy datamanager docker
-        run: chmod +x scripts/deploy.sh && ./scripts/deploy.sh ${{ secrets.GCP_DATAMANAGER_APP_NAME }} $DATAMANAGER_IMAGE_NAME
+        run: chmod +x scripts/deploy.sh && ./scripts/deploy.sh ${{ secrets.GCP_DATAMANAGER_APP_NAME }} $DATAMANAGER_IMAGE_NAME ${{ secrets.CLOUDSQL_INSTANCE }}
         shell: bash
