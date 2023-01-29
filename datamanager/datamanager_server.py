@@ -28,98 +28,102 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         with Session(engine) as session:
             name=request.name
 
-            services=session.query(Services).where(Services.name == name).all()
+            try:
+                services=session.query(Services).where(Services.name == name).all()
 
-            if len(services) == 1:
-                service=services[0]
-                service.domain=request.url
-                service.frequency=request.frequency
-                service.alerting_window=request.alerting_window
-                service.allowed_response_time=request.allowed_resp_time
 
-                session.add(service)
+                if len(services) == 1:
+                    service=services[0]
+                    service.domain=request.url
+                    service.frequency=request.frequency
+                    service.alerting_window=request.alerting_window
+                    service.allowed_response_time=request.allowed_resp_time
+
+                    session.add(service)
+                    session.commit()
+                else:
+                    service = Services(
+                            name=request.name, 
+                            domain=request.url,
+                            frequency=request.frequency,
+                            alerting_window=request.alerting_window,
+                            allowed_response_time=request.allowed_resp_time
+                        )
+                    
+                    session.add(service)
+                    session.commit()
+
+                services=session.query(Services).where(Services.name == name)
+                service_id = services.one().id
+
+                ownerships = session.query(Ownership).where(Ownership.service_id == service_id).all()
+                for ownership in ownerships:
+                    session.delete(ownership)
+                # session.query(Ownership).where(Ownership.service_id == service_id)
                 session.commit()
-            else:
-                service = Services(
-                        name=request.name, 
-                        domain=request.url,
-                        frequency=request.frequency,
-                        alerting_window=request.alerting_window,
-                        allowed_response_time=request.allowed_resp_time
-                    )
+
                 
-                session.add(service)
-                session.commit()
+                admins=session.query(Admins).where(Admins.email == request.email1).all()
+                if len(admins) == 1:
+                    admin1_id=admins[0].id
 
-            services=session.query(Services).where(Services.name == name)
-            service_id = services.one().id
+                    ownership1 = Ownership(
+                            service_id=service_id,
+                            admin_id=admin1_id,
+                            first_contact=True
+                        )
 
-            ownerships = session.query(Ownership).where(Ownership.service_id == service_id).all()
-            for ownership in ownerships:
-                session.delete(ownership)
-            # session.query(Ownership).where(Ownership.service_id == service_id)
-            session.commit()
+                    session.add(ownership1)
+                    session.commit()
 
+                else:
+                    admin1 = Admins(
+                            email=request.email1
+                        )
+                    session.add(admin1)
+                    session.commit()
+                    admin1_id = session.query(Admins).where(Admins.email == request.email1).one().id
+
+                    ownership1 = Ownership(
+                            service_id=service_id,
+                            admin_id=admin1_id,
+                            first_contact=True
+                        )
+
+                    session.add(ownership1)
+                    session.commit()
             
-            admins=session.query(Admins).where(Admins.email == request.email1).all()
-            if len(admins) == 1:
-                admin1_id=admins[0].id
+                admins = session.query(Admins).where(Admins.email == request.email2).all()
+                if len(admins) == 1:
+                    admin2_id = admins[0].id
 
-                ownership1 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin1_id,
-                        first_contact=True
-                    )
+                    ownership2 = Ownership(
+                            service_id=service_id,
+                            admin_id=admin2_id,
+                            first_contact=False
+                        )
 
-                session.add(ownership1)
-                session.commit()
+                    session.add(ownership2)
+                    session.commit()
 
-            else:
-                admin1 = Admins(
-                        email=request.email1
-                    )
-                session.add(admin1)
-                session.commit()
-                admin1_id = session.query(Admins).where(Admins.email == request.email1).one().id
+                else:
+                    admin2 = Admins(
+                            email=request.email2
+                        )
+                    session.add(admin2)
+                    session.commit()
+                    admin2_id = session.query(Admins).where(Admins.email == request.email2).one().id
 
-                ownership1 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin1_id,
-                        first_contact=True
-                    )
+                    ownership2 = Ownership(
+                            service_id=service_id,
+                            admin_id=admin2_id,
+                            first_contact=False
+                        )
 
-                session.add(ownership1)
-                session.commit()
-        
-            admins = session.query(Admins).where(Admins.email == request.email2).all()
-            if len(admins) == 1:
-                admin2_id = admins[0].id
-
-                ownership2 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin2_id,
-                        first_contact=False
-                    )
-
-                session.add(ownership2)
-                session.commit()
-
-            else:
-                admin2 = Admins(
-                        email=request.email2
-                    )
-                session.add(admin2)
-                session.commit()
-                admin2_id = session.query(Admins).where(Admins.email == request.email2).one().id
-
-                ownership2 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin2_id,
-                        first_contact=False
-                    )
-
-                session.add(ownership1)
-                session.commit()
+                    session.add(ownership1)
+                    session.commit()
+            except:
+                raise Exception("something went wrong")
 
         return datamanager_pb2.ResponseMsg(result="okay")
 
@@ -128,18 +132,21 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     _context: grpc.ServicerContext):
         
         with Session(engine) as session:
-            name = request.name
-            service=session.query(Services).where(Services.name == name).one()
+            try:
+                name = request.name
+                service=session.query(Services).where(Services.name == name).one()
 
-            session.delete(service)
-            session.commit()
+                session.delete(service)
+                session.commit()
 
-            ownerships = session.query(Ownership).where(Ownership.service_id == service.id).all()
-            for ownership in ownerships:
-                session.delete(ownership)
-            session.commit()
+                ownerships = session.query(Ownership).where(Ownership.service_id == service.id).all()
+                for ownership in ownerships:
+                    session.delete(ownership)
+                session.commit()
 
-            config[name]["enabled"] = False
+                config[name]["enabled"] = False
+            except:
+                raise Exception("something went wrong")
 
         return datamanager_pb2.ResponseMsg(result="service deleted")
 
