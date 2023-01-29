@@ -127,16 +127,17 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     request: datamanager_pb2.ServiceName, 
                     _context: grpc.ServicerContext):
         
-        # with Session(engine) as session:
-        #     name = request.name
-        #     service = session.query(Services).get(name)
+        with Session(engine) as session:
+            name = request.name
+            services=session.query(Services).where(Services.name == name).all()
 
-        #     session.delete(service)
-        #     session.commit()
+            for service in services:
+                session.delete(service)
+            session.commit()
 
-        # config[request.name]["enabled"] = False
+            config[name]["enabled"] = False
 
-        return datamanager_pb2.ResponseMsg(result="not supported for now")
+        return datamanager_pb2.ResponseMsg(result="service deleted")
 
 def run_in_cycle():
     while True:
@@ -150,14 +151,16 @@ def run_in_cycle():
                         "service_id": service.id,
                         "url": service.domain, 
                         "frequency": service.frequency,
-                        "last_ping": int(round(datetime.now().timestamp()))
+                        "last_ping": int(round(datetime.now().timestamp())),
+                        "enabled" : True
                     }
                 else:
                     config[service.name] = {
                         "service_id": service.id,
                         "url": service.domain, 
                         "frequency": service.frequency,
-                        "last_ping": config[service.name]["last_ping"]
+                        "last_ping": config[service.name]["last_ping"],
+                        "enabled" : True
                     }
 
         cycle_ts = int(round(datetime.now().timestamp()))
@@ -167,7 +170,7 @@ def run_in_cycle():
         topic_path = publisher.topic_path(project_id, topic_id)
 
         for name in config:
-            if cycle_ts >= config[name]["last_ping"]:
+            if (config[name]["enabled"]) and (cycle_ts >= config[name]["last_ping"]):
 
                 config[name]["last_ping"] += config[name]["frequency"]
 

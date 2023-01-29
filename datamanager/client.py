@@ -32,6 +32,12 @@ def read_item(
         "email2": email2
     }
 
-    print(name, url, frequency, alerting_window, allowed_resp_time, email1, email2)
-
     client.change_config(cfg)
+
+@app.post("/delete_service/{name}")
+def read_item(name: str):
+    cfg =  {
+        "name": name
+    }
+
+    client.stop_service(cfg)
