@@ -27,9 +27,10 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         with Session(engine) as session:
             name=request.name
-            services=session.query(Services).where(Services.name == name)
 
-            try:
+            services=session.query(Services).where(Services.name == name).all()
+
+            if len(services) == 1:
                 service=services.one()
                 service.domain=request.url
                 service.frequency=request.frequency
@@ -38,7 +39,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
                 session.add(service)
                 session.commit()
-            except:
+            else:
                 service = Services(
                         name=request.name, 
                         domain=request.url,
@@ -59,8 +60,9 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             # session.query(Ownership).where(Ownership.service_id == service_id)
             session.commit()
 
-            try:
-                admins=session.query(Admins).where(Admins.email == request.email1)
+            
+            admins=session.query(Admins).where(Admins.email == request.email1).all()
+            if len(admins) == 1:
                 admin1_id=admins.one().id
 
                 ownership1 = Ownership(
@@ -72,7 +74,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(ownership1)
                 session.commit()
 
-            except:
+            else:
                 admin1 = Admins(
                         email=request.email1
                     )
@@ -89,8 +91,8 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(ownership1)
                 session.commit()
         
-            try:
-                admins = session.query(Admins).where(Admins.email == request.email2)
+            admins = session.query(Admins).where(Admins.email == request.email2)
+            if len(admins) == 1:
                 admin2_id = admins.one().id
 
                 ownership2 = Ownership(
@@ -102,7 +104,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(ownership2)
                 session.commit()
 
-            except:
+            else:
                 admin2 = Admins(
                         email=request.email2
                     )
