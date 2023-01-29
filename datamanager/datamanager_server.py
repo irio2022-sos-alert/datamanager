@@ -174,7 +174,7 @@ def run_in_cycle():
                 logging.info("HELLO FROM %s", name)
 
 
-        time.sleep(service.frequency)
+        time.sleep(0.05)
 
 def init_db():
     global engine
