@@ -54,7 +54,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             services=session.query(Services).where(Services.name == name)
             service_id = services.one().id
 
-            ownerships = session.query(Ownership).where(Ownership.service_id == service_id)
+            ownerships = session.query(Ownership).where(Ownership.service_id == service_id).all()
             for ownership in ownerships:
                 session.delete(ownership)
             # session.query(Ownership).where(Ownership.service_id == service_id)
@@ -91,7 +91,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(ownership1)
                 session.commit()
         
-            admins = session.query(Admins).where(Admins.email == request.email2)
+            admins = session.query(Admins).where(Admins.email == request.email2).all()
             if len(admins) == 1:
                 admin2_id = admins.one().id
 
@@ -190,6 +190,9 @@ def serve(port) -> None:
     global config
     config = {}
 
+    thread = Thread(target=run_in_cycle)
+    thread.start()
+
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
     datamanager_pb2_grpc.add_DataManagerServicer_to_server(
@@ -198,10 +201,6 @@ def serve(port) -> None:
 
     server.add_insecure_port(bind_address)
     server.start()
-
-    thread = Thread(target=run_in_cycle)
-    thread.start()
-
     logging.info("Listening on port %s.", port)
     server.wait_for_termination()
 
