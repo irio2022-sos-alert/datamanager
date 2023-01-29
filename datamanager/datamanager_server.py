@@ -129,10 +129,14 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         
         with Session(engine) as session:
             name = request.name
-            services=session.query(Services).where(Services.name == name).all()
+            service=session.query(Services).where(Services.name == name).one()
 
-            for service in services:
-                session.delete(service)
+            session.delete(service)
+            session.commit()
+
+            ownerships = session.query(Ownership).where(Ownership.service_id == service.id).all()
+            for ownership in ownerships:
+                session.delete(ownership)
             session.commit()
 
             config[name]["enabled"] = False
@@ -143,7 +147,7 @@ def run_in_cycle():
     while True:
         with Session(engine) as session:
             stmt = select(Services)
-            services = session.exec(stmt)
+            services = session.exec(stmt).all()
 
             for service in services:
                 if not (service.name in config):
@@ -162,6 +166,14 @@ def run_in_cycle():
                         "last_ping": config[service.name]["last_ping"],
                         "enabled" : True
                     }
+
+            services_names = [service.name for service in services]
+
+            keys = config.keys()
+            for key in keys:
+                if key not in services_names:
+                    del config[key]
+                
 
         cycle_ts = int(round(datetime.now().timestamp()))
         publisher = pubsub_v1.PublisherClient()
