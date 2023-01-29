@@ -16,7 +16,7 @@ import datamanager_pb2
 import datamanager_pb2_grpc
 
 from db import init_connection_pool, migrate_db
-from models import Services, Admins, Ownership
+from models import Services, Admins, Ownership, Alerts, Responses
 from sqlmodel import Session, select
 
 from google.cloud import pubsub_v1
@@ -27,7 +27,6 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
     def ChangeConfig(self, 
                     request: datamanager_pb2.ServiceConfig, 
                     _context: grpc.ServicerContext):
-
         with Session(engine) as session:
             name=request.name
 
@@ -135,12 +134,22 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             name = request.name
             service=session.query(Services).where(Services.name == name).one()
 
-            session.delete(service)
-            session.commit()
-
             ownerships = session.query(Ownership).where(Ownership.service_id == service.id).all()
             for ownership in ownerships:
                 session.delete(ownership)
+            session.commit()
+
+            alerts = session.query(Alerts).where(Alerts.service_id == service.id).all()
+            for alert in alerts:
+                session.delete(alert)
+            session.commit()
+
+            responses = session.query(Responses).where(Responses.service_id == service.id).all()
+            for response in responses:
+                session.delete(response)
+            session.commit()
+
+            session.delete(service)
             session.commit()
 
             config[name]["enabled"] = False
