@@ -10,4 +10,4 @@ COPY . ./
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["uvicorn", "client:app"]
+CMD exec uvicorn client:app --host 0.0.0.0 --workers 1
