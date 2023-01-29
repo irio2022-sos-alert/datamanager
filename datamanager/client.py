@@ -32,4 +32,6 @@ def read_item(
         "email2": email2
     }
 
+    print(name, url, frequency, alerting_window, allowed_resp_time, email1, email2)
+
     client.change_config(cfg)

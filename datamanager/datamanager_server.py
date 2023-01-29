@@ -33,7 +33,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 service=services.one()
                 service.domain=request.url
                 service.frequency=request.frequency
-                service.alerting_window=request.alerting_window,
+                service.alerting_window=request.alerting_window
                 service.allowed_response_time=request.allowed_resp_time
 
                 session.add(service)
@@ -44,7 +44,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                         domain=request.url,
                         frequency=request.frequency,
                         alerting_window=request.alerting_window,
-                        allowed_response_time=request.allowed_resp_time,
+                        allowed_response_time=request.allowed_resp_time
                     )
                 
                 session.add(service)
