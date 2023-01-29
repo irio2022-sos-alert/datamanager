@@ -9,3 +9,4 @@ gcloud run deploy $app_name \
 --platform managed \
 --allow-unauthenticated \
 --env-vars-file .env.yaml \
+--min-instances 1
