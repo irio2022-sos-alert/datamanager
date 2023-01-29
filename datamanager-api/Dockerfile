@@ -10,4 +10,4 @@ COPY . ./
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD exec gunicorn client:app --host 0.0.0.0 --bind :$PORT --workers 1
+CMD exec uvicorn client:app --host 0.0.0.0 --bind :$PORT --workers 1
