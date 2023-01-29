@@ -10,7 +10,7 @@ gcloud run deploy $app_name \
 --platform managed \
 --allow-unauthenticated \
 --env-vars-file .env.yaml \
---add-cloudsql-instances $cloudsql_instance
+--add-cloudsql-instances $cloudsql_instance \
 --no-cpu-throttling \
 --min-instances 1 \
 --max-instances 1
