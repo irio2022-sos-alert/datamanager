@@ -31,7 +31,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             services=session.query(Services).where(Services.name == name).all()
 
             if len(services) == 1:
-                service=services.one()
+                service=services[0]
                 service.domain=request.url
                 service.frequency=request.frequency
                 service.alerting_window=request.alerting_window
@@ -63,7 +63,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             
             admins=session.query(Admins).where(Admins.email == request.email1).all()
             if len(admins) == 1:
-                admin1_id=admins.one().id
+                admin1_id=admins[0]
 
                 ownership1 = Ownership(
                         service_id=service_id,
@@ -93,7 +93,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
         
             admins = session.query(Admins).where(Admins.email == request.email2).all()
             if len(admins) == 1:
-                admin2_id = admins.one().id
+                admin2_id = admins[0]
 
                 ownership2 = Ownership(
                         service_id=service_id,
