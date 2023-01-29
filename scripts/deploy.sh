@@ -9,8 +9,8 @@ gcloud run deploy $app_name \
 --region europe-north1 \
 --platform managed \
 --allow-unauthenticated \
+--min-instances 1 \
+--max-instances 1 \
 --env-vars-file .env.yaml \
 --add-cloudsql-instances $cloudsql_instance \
 --no-cpu-throttling \
---min-instances 1 \
---max-instances 1

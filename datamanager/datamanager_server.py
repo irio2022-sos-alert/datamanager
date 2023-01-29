@@ -152,6 +152,13 @@ def run_in_cycle():
                         "frequency": service.frequency,
                         "last_ping": int(round(datetime.now().timestamp()))
                     }
+                else:
+                    config[service.name] = {
+                        "service_id": service.id,
+                        "url": service.domain, 
+                        "frequency": service.frequency,
+                        "last_ping": config[service.name]["last_ping"]
+                    }
 
         cycle_ts = int(round(datetime.now().timestamp()))
         publisher = pubsub_v1.PublisherClient()
