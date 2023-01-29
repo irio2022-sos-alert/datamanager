@@ -53,12 +53,12 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             services=session.query(Services).where(Services.name == name)
             service_id = services.one().id
 
-            ownerships = session.query(Ownership).get(service_id)
+            ownerships = session.query(Ownership).where(Ownership.service_id == service_id)
             session.delete(ownerships)
             session.commit()
 
             try:
-                admins=session.query(Admins).get(request.email1)
+                admins=session.query(Admins).where(Admins.email == request.email1)
                 admin1_id=admins.one().id
 
                 ownership1 = Ownership(
@@ -76,7 +76,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     )
                 session.add(admin1)
                 session.commit()
-                admin1_id = session.query(Admins).get(request.email1).one().id
+                admin1_id = session.query(Admins).where(Admins.email == request.email1).one().id
 
                 ownership1 = Ownership(
                         service_id=service_id,
@@ -88,7 +88,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.commit()
         
             try:
-                admins = session.query(Admins).get(request.email2)
+                admins = session.query(Admins).where(Admins.email == request.email2)
                 admin2_id = admins.one().id
 
                 ownership2 = Ownership(
@@ -106,7 +106,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     )
                 session.add(admin2)
                 session.commit()
-                admin2_id = session.query(Admins).get(request.email2).one().id
+                admin2_id = session.query(Admins).where(Admins.email == request.email2).one().id
 
                 ownership2 = Ownership(
                         service_id=service_id,
