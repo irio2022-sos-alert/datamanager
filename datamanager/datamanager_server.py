@@ -1,8 +1,8 @@
 import logging
 from concurrent import futures
 
-from multiprocessing import Process
-import psutil
+from threading import Thread
+# import psutil
 import sys
 
 import time
@@ -211,8 +211,8 @@ def run_in_cycle():
 
             time.sleep(0.05)
     except:
-        p = psutil.Process(os.getppid())
-        p.terminate()
+        # p = psutil.Process(os.getppid())
+        # p.terminate()
         sys.exit()
 
 def init_db():
@@ -227,8 +227,11 @@ def serve(port) -> None:
     global config
     config = {}
 
-    proc = Process(target=run_in_cycle)
-    proc.start()
+    # proc = Process(target=run_in_cycle)
+    # proc.start()
+
+    thread = Thread(target=run_in_cycle)
+    thread.start()
 
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
