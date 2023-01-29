@@ -19,11 +19,6 @@ class DataManagerStub(object):
                 request_serializer=datamanager__pb2.ServiceConfig.SerializeToString,
                 response_deserializer=datamanager__pb2.ResponseMsg.FromString,
                 )
-        self.StopService = channel.unary_unary(
-                '/DataManager/StopService',
-                request_serializer=datamanager__pb2.ServiceName.SerializeToString,
-                response_deserializer=datamanager__pb2.ResponseMsg.FromString,
-                )
 
 
 class DataManagerServicer(object):
@@ -35,23 +30,12 @@ class DataManagerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StopService(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_DataManagerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'ChangeConfig': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeConfig,
                     request_deserializer=datamanager__pb2.ServiceConfig.FromString,
-                    response_serializer=datamanager__pb2.ResponseMsg.SerializeToString,
-            ),
-            'StopService': grpc.unary_unary_rpc_method_handler(
-                    servicer.StopService,
-                    request_deserializer=datamanager__pb2.ServiceName.FromString,
                     response_serializer=datamanager__pb2.ResponseMsg.SerializeToString,
             ),
     }
@@ -77,23 +61,6 @@ class DataManager(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/DataManager/ChangeConfig',
             datamanager__pb2.ServiceConfig.SerializeToString,
-            datamanager__pb2.ResponseMsg.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def StopService(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/DataManager/StopService',
-            datamanager__pb2.ServiceName.SerializeToString,
             datamanager__pb2.ResponseMsg.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

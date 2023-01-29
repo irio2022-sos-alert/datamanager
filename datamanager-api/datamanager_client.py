@@ -31,16 +31,3 @@ class ExampleDataManagerClient(object):
         except grpc.RpcError as err:
             print(err.details())
             print('{}, {}'.format(err.code().name, err.code().value))
-
-    def stop_service(self, cfg):
-        request = datamanager_pb2.ServiceName(
-            name=cfg["name"]
-        )
-
-        try:
-            response = self.stub.StopService(request)
-            print('New config sent.')
-            print(response)
-        except grpc.RpcError as err:
-            print(err.details())
-            print('{}, {}'.format(err.code().name, err.code().value))

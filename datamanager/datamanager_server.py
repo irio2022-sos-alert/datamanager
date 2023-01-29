@@ -119,32 +119,6 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
 
         return datamanager_pb2.ResponseMsg(result="okay")
 
-    def StopService(self, 
-                    request: datamanager_pb2.ServiceName, 
-                    _context: grpc.ServicerContext):
-        
-        with Session(engine) as session:
-            name = request.name
-            service=session.query(Services).where(Services.name == name).one()
-
-            ownerships = session.query(Ownership).where(Ownership.service_id == service.id).all()
-            for ownership in ownerships:
-                session.delete(ownership)
-
-            alerts = session.query(Alerts).where(Alerts.service_id == service.id).all()
-            for alert in alerts:
-                session.delete(alert)
-
-            responses = session.query(Responses).where(Responses.service_id == service.id).all()
-            for response in responses:
-                session.delete(response)
-
-            session.delete(service)
-            session.commit()
-
-
-        return datamanager_pb2.ResponseMsg(result="service deleted")
-
 def run_in_cycle():
     try:
         while True:
