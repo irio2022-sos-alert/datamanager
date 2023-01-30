@@ -98,5 +98,5 @@ def read_item(
     email2: str,
 ):
     update_config(
-        name, url, frequency, alerting_window, alerting_window, email1, email2
+        name, url, frequency, alerting_window, alerting_window, allowed_resp_time, email1, email2
     )
