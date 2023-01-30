@@ -31,7 +31,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             name=request.name
 
             services=session.query(Services).where(Services.name == name).all()
-            # lock.acquire()
+            lock.acquire()
 
             if len(services) == 1:
                 service=services[0]
@@ -54,7 +54,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(service)
                 session.commit()
             
-            # lock.release()
+            lock.release()
             services=session.query(Services).where(Services.name == name).all()
             service_id = services[0].id
 
@@ -75,7 +75,6 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(admin1)
                 session.commit()
 
-        with Session(engine) as session:
             admin1_id = session.query(Admins).where(Admins.email == request.email1).all()[0].id
 
             ownership1 = Ownership(
@@ -87,7 +86,6 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             session.add(ownership1)
             session.commit()
         
-        with Session(engine) as session:    
             admins=session.query(Admins).where(Admins.email == request.email2).all()
             if len(admins) == 0:
                 admin2 = Admins(
@@ -96,7 +94,6 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(admin2)
                 session.commit()
 
-        with Session(engine) as session:
             admin2_id = session.query(Admins).where(Admins.email == request.email2).all()[0].id
 
             ownership2 = Ownership(
@@ -115,7 +112,7 @@ def run_in_cycle():
         while True:
             with Session(engine) as session:
 
-                # lock.acquire()
+                lock.acquire()
                 stmt = select(Services)
                 services = session.exec(stmt).all()
 
@@ -136,7 +133,7 @@ def run_in_cycle():
                             "last_ping": config[service.name]["last_ping"],
                             "enabled" : True
                         }
-                # lock.release()
+                lock.release()
 
                 services_names = [service.name for service in services]
 
