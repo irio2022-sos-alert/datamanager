@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 
-import datamanager_client
-
-client = datamanager_client.ExampleDataManagerClient()
 from sqlmodel import Session
-from db import engine
+from db import init_connection_pool, migrate_db
 from models import Services, Admins, Ownership
 
 
@@ -76,6 +73,13 @@ def update_config(
 
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def init_db():
+    global engine
+    engine = init_connection_pool()
+    migrate_db(engine)
 
 
 @app.get("/")

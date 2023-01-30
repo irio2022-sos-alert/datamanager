@@ -107,7 +107,6 @@ if __name__ == "__main__":
 
     services_count = 1000
     engine = init_connection_pool()
-    clean_up_db(engine)
     migrate_db(engine)
 
     def update_config(
@@ -145,13 +144,30 @@ if __name__ == "__main__":
             admin1 = Admins(email=email1)
             admin2 = Admins(email=email2)
 
-            session.merge(admin1)
-            session.merge(admin2)
+            old1 = session.query(Admins).where(Admins.email == email1).first()
+            odl2 = session.query(Admins).where(Admins.email == email2).first()
+
+            if not old1:
+                session.add(admin1)
+
+            if not odl2:
+                session.add(admin2)
+
+            # delete ownership
+            ownerships = (
+                session.query(Ownership).where(Ownership.service_id == service.id).all()
+            )
+            for ownership in ownerships:
+                session.delete(ownership)
+
             session.commit()
 
             # update ownership
             admin1 = session.query(Admins).where(Admins.email == email1).first()
             admin2 = session.query(Admins).where(Admins.email == email2).first()
+            service = (
+                session.query(Services).where(Services.name == service.name).first()
+            )
             session.merge(
                 Ownership(service_id=service.id, admin_id=admin1.id, first_contact=True)
             )
@@ -162,6 +178,5 @@ if __name__ == "__main__":
             )
 
             session.commit()
-        return None
 
-    update_config("elo", "google.com", 3, 10, 100, "what@mai.com", "waljf@elo.com")
+    update_config("elo", "ggg.com", 3, 10, 100, "what@mai.com", "combi@elo.com")
