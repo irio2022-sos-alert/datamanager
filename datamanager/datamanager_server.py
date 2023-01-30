@@ -113,9 +113,7 @@ def run_in_cycle():
         while True:
             with Session(engine) as session:
 
-                lock.acquire()
-                stmt = select(Services)
-                services = session.exec(stmt).all()
+                services = session.query(Services).all()
 
                 for service in services:
                     if not (service.name in config):
@@ -134,7 +132,6 @@ def run_in_cycle():
                             "last_ping": config[service.name]["last_ping"],
                             "enabled": True,
                         }
-                lock.release()
 
                 services_names = [service.name for service in services]
 
