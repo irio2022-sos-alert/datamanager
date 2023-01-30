@@ -1,7 +1,7 @@
 import logging
 from concurrent import futures
 
-from multiprocessing import Process
+from multiprocessing import Process, Lock
 import psutil
 import sys
 
@@ -31,7 +31,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             name=request.name
 
             services=session.query(Services).where(Services.name == name).all()
-
+            lock.acquire()
 
             if len(services) == 1:
                 service=services[0]
@@ -53,6 +53,8 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 
                 session.add(service)
                 session.commit()
+            
+            lock.release()
 
             services=session.query(Services).where(Services.name == name)
             service_id = services.one().id
@@ -130,6 +132,8 @@ def run_in_cycle():
     try:
         while True:
             with Session(engine) as session:
+
+                lock.acquire()
                 stmt = select(Services)
                 services = session.exec(stmt).all()
 
@@ -150,6 +154,7 @@ def run_in_cycle():
                             "last_ping": config[service.name]["last_ping"],
                             "enabled" : True
                         }
+                lock.release()
 
                 services_names = [service.name for service in services]
 
@@ -198,7 +203,9 @@ def serve(port) -> None:
     init_db()
 
     global config
+    global lock
     config = {}
+    lock = Lock()
 
     proc = Process(target=run_in_cycle)
     proc.start()
