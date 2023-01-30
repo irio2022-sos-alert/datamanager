@@ -33,11 +33,3 @@ def read_item(
     }
 
     client.change_config(cfg)
-
-@app.post("/delete_service/{name}")
-def read_item(name: str):
-    cfg =  {
-        "name": name
-    }
-
-    client.stop_service(cfg)
