@@ -56,75 +56,57 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             
             lock.release()
 
+        with Session(engine) as session:
             services=session.query(Services).where(Services.name == name).all()
             service_id = services[0].id
 
             ownerships = session.query(Ownership).where(Ownership.service_id == service_id).all()
             for ownership in ownerships:
                 session.delete(ownership)
-                session.commit()
+            session.commit()
             # session.query(Ownership).where(Ownership.service_id == service_id)
 
-            
+        with Session(engine) as session:    
             admins=session.query(Admins).where(Admins.email == request.email1).all()
-            if len(admins) == 1:
-                admin1_id=admins[0].id
-
-                ownership1 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin1_id,
-                        first_contact=True
-                    )
-
-                session.add(ownership1)
-                session.commit()
-
-            else:
+            if len(admins) == 0:
                 admin1 = Admins(
                         email=request.email1
                     )
                 session.add(admin1)
                 session.commit()
-                admin1_id = session.query(Admins).where(Admins.email == request.email1).all()[0].id
 
-                ownership1 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin1_id,
-                        first_contact=True
-                    )
+        with Session(engine) as session:
+            admin1_id = session.query(Admins).where(Admins.email == request.email1).all()[0].id
 
-                session.add(ownership1)
-                session.commit()
+            ownership1 = Ownership(
+                    service_id=service_id,
+                    admin_id=admin1_id,
+                    first_contact=True
+                )
+
+            session.add(ownership1)
+            session.commit()
         
-            admins = session.query(Admins).where(Admins.email == request.email2).all()
-            if len(admins) == 1:
-                admin2_id = admins[0].id
-
-                ownership2 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin2_id,
-                        first_contact=False
-                    )
-
-                session.add(ownership2)
-                session.commit()
-
-            else:
+        with Session(engine) as session:    
+            admins=session.query(Admins).where(Admins.email == request.email2).all()
+            if len(admins) == 0:
                 admin2 = Admins(
                         email=request.email2
                     )
                 session.add(admin2)
                 session.commit()
-                admin2_id = session.query(Admins).where(Admins.email == request.email2).all()[0].id
 
-                ownership2 = Ownership(
-                        service_id=service_id,
-                        admin_id=admin2_id,
-                        first_contact=False
-                    )
+        with Session(engine) as session:
+            admin2_id = session.query(Admins).where(Admins.email == request.email2).all()[0].id
 
-                session.add(ownership1)
-                session.commit()
+            ownership2 = Ownership(
+                    service_id=service_id,
+                    admin_id=admin2_id,
+                    first_contact=True
+                )
+
+            session.add(ownership2)
+            session.commit()
 
         return datamanager_pb2.ResponseMsg(result="okay")
 
