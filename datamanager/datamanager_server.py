@@ -64,6 +64,7 @@ def update_config(
         # update ownership
         admin1 = session.query(Admins).where(Admins.email == email1).first()
         admin2 = session.query(Admins).where(Admins.email == email2).first()
+        service = session.query(Services).where(Services.name == service.name).first()
         session.merge(
             Ownership(service_id=service.id, admin_id=admin1.id, first_contact=True)
         )
