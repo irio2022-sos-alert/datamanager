@@ -184,7 +184,10 @@ def run_in_cycle():
                     _future = publisher.publish(topic_path, data)
                     # logging.info(f'published message id {future.result()}')
 
-                    logging.info("HELLO FROM %s", name)
+                    serv_id = config[name]["service_id"]
+                    urll = config[name]["url"]
+
+                    logging.info(f"HELLO FROM {name} {serv_id} {urll}")
 
 
             time.sleep(0.05)
