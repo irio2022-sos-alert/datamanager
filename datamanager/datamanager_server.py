@@ -55,8 +55,6 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.commit()
             
             # lock.release()
-
-        with Session(engine) as session:
             services=session.query(Services).where(Services.name == name).all()
             service_id = services[0].id
 
@@ -66,9 +64,8 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             session.commit()
             # session.query(Ownership).where(Ownership.service_id == service_id)
 
-        logging.info("ADD ADMIN")
+            logging.info("ADD ADMIN")
 
-        with Session(engine) as session:    
             admins=session.query(Admins).where(Admins.email == request.email1).all()
             logging.info(f"LEN ADMINS: {len(admins)}")
             if len(admins) == 0:
