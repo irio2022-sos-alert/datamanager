@@ -110,15 +110,10 @@ def serve(port) -> None:
     init_db()
 
     global config
-    global lock
     config = {}
-    lock = Lock()
 
     proc = Process(target=run_in_cycle)
     proc.start()
-
-    # thread = Thread(target=run_in_cycle)
-    # thread.start()
 
     bind_address = f"[::]:{port}"
     server = grpc.server(futures.ThreadPoolExecutor())
