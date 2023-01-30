@@ -180,3 +180,4 @@ if __name__ == "__main__":
             session.commit()
 
     update_config("elo", "ggg.com", 3, 10, 100, "what@mai.com", "combi@elo.com")
+    clean_up_db(engine)
