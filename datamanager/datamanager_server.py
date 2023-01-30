@@ -82,10 +82,10 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
     ):
         update_config(
             name=request.name,
-            domain=request.domain,
+            domain=request.url,
             frequency=request.frequency,
             alerting_window=request.alerting_window,
-            allowed_response_time=request.allowed_response_time,
+            allowed_response_time=request.allowed_resp_time,
             email1=request.email1,
             email2=request.email2,
         )
