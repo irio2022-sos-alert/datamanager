@@ -56,8 +56,8 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             
             lock.release()
 
-            services=session.query(Services).where(Services.name == name)
-            service_id = services.one().id
+            services=session.query(Services).where(Services.name == name).all()
+            service_id = services[0].id
 
             ownerships = session.query(Ownership).where(Ownership.service_id == service_id).all()
             for ownership in ownerships:
@@ -85,7 +85,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     )
                 session.add(admin1)
                 session.commit()
-                admin1_id = session.query(Admins).where(Admins.email == request.email1).one().id
+                admin1_id = session.query(Admins).where(Admins.email == request.email1).all()[0].id
 
                 ownership1 = Ownership(
                         service_id=service_id,
@@ -115,7 +115,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                     )
                 session.add(admin2)
                 session.commit()
-                admin2_id = session.query(Admins).where(Admins.email == request.email2).one().id
+                admin2_id = session.query(Admins).where(Admins.email == request.email2).all()[0].id
 
                 ownership2 = Ownership(
                         service_id=service_id,
