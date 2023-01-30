@@ -31,7 +31,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
             name=request.name
 
             services=session.query(Services).where(Services.name == name).all()
-            lock.acquire()
+            # lock.acquire()
 
             if len(services) == 1:
                 service=services[0]
@@ -54,7 +54,7 @@ class DataManager(datamanager_pb2_grpc.DataManagerServicer):
                 session.add(service)
                 session.commit()
             
-            lock.release()
+            # lock.release()
 
         with Session(engine) as session:
             services=session.query(Services).where(Services.name == name).all()
@@ -118,7 +118,7 @@ def run_in_cycle():
         while True:
             with Session(engine) as session:
 
-                lock.acquire()
+                # lock.acquire()
                 stmt = select(Services)
                 services = session.exec(stmt).all()
 
@@ -139,7 +139,7 @@ def run_in_cycle():
                             "last_ping": config[service.name]["last_ping"],
                             "enabled" : True
                         }
-                lock.release()
+                # lock.release()
 
                 services_names = [service.name for service in services]
 
